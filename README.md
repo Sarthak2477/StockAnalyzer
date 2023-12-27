@@ -1,5 +1,28 @@
-<<<<<<< HEAD
+# Stock Prediction System with Data Fetcher and Analyzer
 
-=======
-Stock Analyzer
->>>>>>> 0b5a1d8174799b74911044e5f2f1f16feaa23016
+This Python program is designed to predict stock prices using historical data fetched from the Alpha Vantage API and analyzed with a Long Short-Term Memory (LSTM) model. It consists of two main components: DataFetcher and Analyzer.
+
+# Components:
+  DataFetcher:
+    Responsible for fetching stock data from the Alpha Vantage API at regular intervals.
+    Asks for user input (stock symbol and time series) if not provided.
+    Stores fetched data as a JSON file (fetched_data.json).
+    Utilizes an agent called data fetcher.
+  Analyzer:
+    Analyzes fetched stock data to predict future stock prices.
+    Utilizes LSTM model for predictions.
+    Trains the model on fetched data and generates investment recommendations based on predicted prices.
+    Implements an agent called analyzer for processing and analyzing the data.
+  Usage:
+    Run the DataFetcher module, which fetches stock data and stores it in fetched_data.json.
+    Run the Analyzer module to analyze the fetched data, make predictions, and generate investment recommendations.
+# How to Run:
+    Ensure necessary libraries are installed (tensorflow, pandas, numpy, etc.).
+    Set up the API keys for Alpha Vantage in the fetch_data function.
+    Run the main.py file
+# Notes:
+    Adjust the model parameters and training epochs in the analyze_stock_data function for better predictions.
+    Ensure fetched_data.json exists in the same directory before running the Analyzer.
+# Dependencies:
+    tensorflow, pandas, numpy, sklearn for data processing and LSTM modeling.
+    uagents library for agent-based interaction.
