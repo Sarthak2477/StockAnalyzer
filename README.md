@@ -24,8 +24,8 @@ This Python program is designed to predict stock prices using historical data fe
   4. Run main.py
       `python main.py`
 # Notes:
-    Adjust the model parameters and training epochs in the analyze_stock_data function for better predictions.
-    Ensure fetched_data.json exists in the same directory before running the Analyzer.
+  Adjust the model parameters and training epochs in the analyze_stock_data function for better predictions.
+  Ensure fetched_data.json exists in the same directory before running the Analyzer.
 # Dependencies:
-    tensorflow, pandas, numpy, sklearn for data processing and LSTM modeling.
-    uagents library for agent-based interaction.
+  tensorflow, pandas, numpy, sklearn for data processing and LSTM modeling.
+  uagents library for agent-based interaction.
