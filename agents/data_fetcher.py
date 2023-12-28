@@ -42,6 +42,7 @@ async def analyze(ctx: Context):
 
     if stock_symbol is None:
         stock_symbol = input("Stock Symbol(e.g., MSFT, TSLA): ")
+        ctx.storage.set("symbol", stock_symbol)
 
     if time_series is None:
         time_series = input("Time Series(e.g., TIME_SERIES_DAILY): ")
