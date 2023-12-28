@@ -11,11 +11,16 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 from uagents import Agent, Context
 from messages.message import Message
+import requests
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
 
 Analyzer = Agent(
     name="analyzer",
     seed="analyzer agent for the stock prediction system"
 )
+nltk_vader_loaded = False
 
 # Process fetched data and make predictions
 
@@ -66,6 +71,7 @@ def analyze_stock_data(data):
     predicted_prices = scaler.inverse_transform(predicted_prices)
 
     # Create a simple Matplotlib line plot
+   # Create a simple Matplotlib line plot
     plt.figure(figsize=(10, 6))
     plt.plot(df.index[split + sequence_length:], df['4. close'].values[split + sequence_length:], label='Actual Prices')
     plt.plot(df.index[split + sequence_length:], predicted_prices, label='Predicted Prices')
@@ -73,6 +79,10 @@ def analyze_stock_data(data):
     plt.xlabel('Date')
     plt.ylabel('Price')
     plt.legend()
+
+    # Rotate x-axis labels for better readability
+    plt.xticks(rotation=45)  # Rotate x-axis labels by 45 degrees
+
     plt.show()
 
     # Calculate Mean Squared Error
@@ -101,11 +111,66 @@ def load_data_from_json(filename):
         print(f"Error decoding JSON in file '{filename}': {e}")
         return None
     
+def sentiment_analysis(stock_symbol):
+    # Function to fetch news related to the stock symbol from a News API
+    def fetch_news(stock):
+        conn = http.client.HTTPSConnection("news-api14.p.rapidapi.com")
+
+        headers = {
+            'X-RapidAPI-Key': "32ced199c6msh5cc64836c24756fp1e0d08jsnd83acc444637",
+            'X-RapidAPI-Host': "news-api14.p.rapidapi.com"
+        }
+
+        conn.request("GET", f"/search?q={stock}&country=us&language=en&pageSize=10&publisher=cnn.com%2Cbbc.com", headers=headers)
+
+        res = conn.getresponse()
+        data = res.read().decode("utf-8")
+        
+        if res.status == 200:
+            return json.loads(data)
+        else:
+            return None
+
+    # Function to perform sentiment analysis using NLTK's VADER on the fetched news
+    def perform_sentiment_analysis(news_data):
+        # Initializing the VADER sentiment analyzer
+        analyzer = SentimentIntensityAnalyzer()
+
+        # Analyzing sentiment using VADER for each news title
+        compound_scores = [analyzer.polarity_scores(title)['compound'] for title in news_data]
+
+        # Calculate the overall sentiment score
+        overall_sentiment_score = sum(compound_scores) / len(compound_scores)
+
+        # Generate investment recommendation based on sentiment score
+        if overall_sentiment_score >= 0.05:
+            return "Positive Sentiment: Consider Buying"
+        elif overall_sentiment_score <= -0.05:
+            return "Negative Sentiment: Consider Selling"
+        else:
+            return "Neutral Sentiment: Hold"
+
+    # Fetch news related to the stock symbol
+    news = fetch_news(stock_symbol)
+    if news:
+        # Extract titles/headlines from the news data
+        news_titles = [article['title'] for article in news['articles']]
+        # Perform sentiment analysis on the news titles using VADER
+        recommendation = perform_sentiment_analysis(news_titles)
+        print(f"Sentiment Analysis for {stock_symbol}: {recommendation}")
+    else:
+        print("Failed to fetch news. Please check your API key or try again later.")
+
 @Analyzer.on_message(model=Message)
 async def message_handler(ctx: Context, sender: str, msg: Message):
+    global nltk_vader_loaded
+    if not nltk_vader_loaded:
+        nltk.download('vader_lexicon')
+
     ctx.logger.info("Analyzing data...")
     try:
         ctx.logger.info("data found in the storage.") 
-        analyze_stock_data(load_data_from_json('fetched_data.json'))  # No need for data.decode("utf-8")
+        analyze_stock_data(load_data_from_json('fetched_data.json'))  
+        sentiment_analysis(ctx.storage.get("stock_symbol"))
     except json.JSONDecodeError as e:
         print("Error decoding JSON:", e)
