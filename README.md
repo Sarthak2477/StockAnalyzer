@@ -17,9 +17,12 @@ This Python program is designed to predict stock prices using historical data fe
     Run the DataFetcher module, which fetches stock data and stores it in fetched_data.json.
     Run the Analyzer module to analyze the fetched data, make predictions, and generate investment recommendations.
 # How to Run:
-    Ensure necessary libraries are installed (tensorflow, pandas, numpy, etc.).
-    Set up the API keys for Alpha Vantage in the fetch_data function.
-    Run the main.py file
+  1. Clone the repository
+  2. Start the Virtual Environment
+      `Scripts\activate`
+  3. Install dependencies
+  4. Run main.py
+      `python main.py`
 # Notes:
     Adjust the model parameters and training epochs in the analyze_stock_data function for better predictions.
     Ensure fetched_data.json exists in the same directory before running the Analyzer.
